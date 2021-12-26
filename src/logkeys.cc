@@ -62,7 +62,7 @@
 
 namespace logkeys {
 
-#define TIME_FORMAT "%F %T%z > "  // results in YYYY-mm-dd HH:MM:SS+ZZZZ
+#define TIME_FORMAT "\"%F %T\","  // results is "YYYY-mm-dd HH:MM:SS", (CSV format)
 
 struct key_state_t {
   wchar_t key;
@@ -628,11 +628,11 @@ void log_loop()
   time(&cur_time);
   strftime(timestamp, sizeof(timestamp), TIME_FORMAT, localtime(&cur_time));
 
-  if (args.flags & FLAG_NO_TIMESTAMPS)
+  /*if (args.flags & FLAG_NO_TIMESTAMPS)
     file_size += fprintf(out, "Logging started at %s\n\n", timestamp);
   else
     file_size += fprintf(out, "Logging started ...\n\n%s", timestamp);
-  fflush(out);
+  fflush(out);*/
 
   // infinite loop: exit gracefully by receiving SIGHUP, SIGINT or SIGTERM (of which handler closes input_fd)
   while (update_key_state()) {
@@ -646,10 +646,10 @@ void log_loop()
     }
   }
 
-  // append final timestamp, close files and exit
+  /*// append final timestamp, close files and exit
   time(&cur_time);
   strftime(timestamp, sizeof(timestamp), "%F %T%z", localtime(&cur_time));
-  fprintf(out, "\n\nLogging stopped at %s\n\n", timestamp);
+  fprintf(out, "\n\nLogging stopped at %s\n\n", timestamp);*/
   fclose(out);
 }
 
