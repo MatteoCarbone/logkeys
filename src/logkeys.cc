@@ -62,7 +62,7 @@
 
 namespace logkeys {
 
-#define TIME_FORMAT "\"%F %T\","  // results is "YYYY-mm-dd HH:MM:SS", (CSV format)
+#define TIME_FORMAT ",\"%F %T\""  // results is "YYYY-mm-dd HH:MM:SS", (CSV format)
 
 struct key_state_t {
   wchar_t key;
@@ -560,8 +560,8 @@ int log_event(FILE *out)
     if (args.flags & FLAG_NO_TIMESTAMPS)
       inc_size += fprintf(out, "\n");
     else {
-      strftime(timestamp, sizeof(timestamp), /*"\n"*/ TIME_FORMAT, localtime(&key_state.event.time.tv_sec));
-      inc_size += fprintf(out, "%s", timestamp);  // then newline and timestamp
+      strftime(timestamp, sizeof(timestamp),TIME_FORMAT "\n", localtime(&key_state.event.time.tv_sec));
+      inc_size += fprintf(out, "%s", timestamp);  // then timestamp and newline
     }
   }
   if (is_char_key(scan_code)) {
