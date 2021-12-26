@@ -52,7 +52,7 @@
 #define COMMAND_STR_CAPSLOCK_STATE ("{ { xset q 2>/dev/null | grep -q -E 'Caps Lock: +on'; } || { setleds 2>/dev/null | grep -q 'CapsLock on'; }; } && echo on")
 
 #define INPUT_EVENT_PATH  "/dev/input/"  // standard path
-#define DEFAULT_LOG_FILE  "/var/log/logkeys.log"
+#define DEFAULT_LOG_FILE  "/var/log/logkeys.csv"
 #define PID_FILE          "/var/run/logkeys.pid"
 
 #include "usage.cc"      // usage() function
@@ -62,7 +62,7 @@
 
 namespace logkeys {
 
-#define TIME_FORMAT ",\"%F %T\""  // results is "YYYY-mm-dd HH:MM:SS", (CSV format)
+#define TIME_FORMAT ",\"%F %T\""  // results is ,"YYYY-mm-dd HH:MM:SS" (CSV format)
 
 struct key_state_t {
   wchar_t key;
@@ -532,7 +532,7 @@ int log_event(FILE *out)
 {
   int inc_size = 0;
   unsigned short scan_code = key_state.event.code;
-  char timestamp[32];  // timestamp string, long enough to hold format "\n%F %T%z > "
+  char timestamp[32];  // timestamp string, long enough to hold format  ,"%F %T" \n
 
   if (!key_state.scancode_ok) {  // keycode out of range, log error
     inc_size += fprintf(out, "<E-%x>", scan_code);
