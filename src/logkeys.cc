@@ -560,7 +560,7 @@ int log_event(FILE *out)
     if (args.flags & FLAG_NO_TIMESTAMPS)
       inc_size += fprintf(out, "\n");
     else {
-      strftime(timestamp, sizeof(timestamp), "\n" TIME_FORMAT, localtime(&key_state.event.time.tv_sec));
+      strftime(timestamp, sizeof(timestamp), /*"\n"*/ TIME_FORMAT, localtime(&key_state.event.time.tv_sec));
       inc_size += fprintf(out, "%s", timestamp);  // then newline and timestamp
     }
   }
