@@ -531,9 +531,11 @@ FILE* open_log_file()
 
 
 // Writes event to log file and returns the increased file size
-int log_event(FILE *out, string *stringa, string *SqlData)
+int log_event(FILE *out)
 {
   int inc_size = 0;
+  string stringa='';
+  string SqlData[4];
   unsigned short scan_code = key_state.event.code;
   char timestamp[32];  // timestamp string, long enough to hold format  ,"%F %T" \n
 
